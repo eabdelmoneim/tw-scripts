@@ -25,11 +25,11 @@ async function main() {
   try {
     const ownedNFTs = await getOwnedNFTs({
       contract,
-      owner: "0xbEDCf49C6fF86dC5B0523d78F08be8e80D7B2089", // Replace with the address you want to query
+      owner: "0x09b9257437C3f6BC5Fc3e413501daFab197c919E", // Replace with the address you want to query
     });
 
     console.log("Owned NFTs:");
-    console.log(JSON.stringify(ownedNFTs, null, 2));
+    console.log(ownedNFTs);
   } catch (error) {
     console.error("Error querying owned NFTs:", error);
   }
