@@ -28,8 +28,6 @@ async function main() {
     chain,
   });
 
-  console.log("got contract");
-
   // Generate signature
   const recipientAddress = "0xeAa5a7D7fA42CBAff443FE1BDB764E608E039F97";
   const {payload, signature} = await generateMintSignature({
