@@ -4,6 +4,7 @@ import { privateKeyToAccount } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
 import { generateMintSignature, mintWithSignature } from "thirdweb/extensions/erc721";
 import dotenv from "dotenv";
+import { toFunctionSelector } from "thirdweb/utils";
 
 dotenv.config();
 
