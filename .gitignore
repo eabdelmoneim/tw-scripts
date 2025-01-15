@@ -1,7 +1,6 @@
 node_modules
 tw-docs/
 .env
-.cursorrules
 *.csv
 
 addresses.json
