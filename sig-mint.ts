@@ -5,6 +5,7 @@ import { defineChain } from "thirdweb/chains";
 import { generateMintSignature, mintWithSignature } from "thirdweb/extensions/erc721";
 import dotenv from "dotenv";
 import { toFunctionSelector } from "thirdweb/utils";
+import { multicall } from "thirdweb/extensions/common"; 
 
 dotenv.config();
 
@@ -53,6 +54,20 @@ async function main() {
     contractType: "LoyaltyCard"
   });
 
+  const {payload: payload2, signature: signature2} = await generateMintSignature({
+    contract,
+    mintRequest: {
+      to: recipientAddress,
+      metadata: {
+        name: "My NFT",
+        description: "This is my NFT",
+        image: "https://example.com/image.png",
+      },
+    },
+    account,
+    contractType: "LoyaltyCard"
+  });
+
   console.log("Generated signature:", signature);
 
   // Mint with signature
@@ -63,17 +78,48 @@ async function main() {
     signature,
   });
 
-  console.log("transaction:", transaction);
-  console.log("transaction.to:", transaction.to);
-  // Access value directly since it's a property, not a function
-  console.log("transaction.value:", transaction.value);
-
-  const result = await sendTransaction({
-    transaction,
-    account,
+  const transaction2 = mintWithSignature({
+    contract,
+    payload: payload2,
+    signature: signature2,
   });
 
+//  console.log("transaction:", transaction);
+  //console.log("transaction.to:", transaction.to);
+  // Access value directly since it's a property, not a function
+  //console.log("transaction.value:", transaction.value);
+  let data: string | undefined;
+  if (typeof transaction.data === "function") {
+    data = await transaction.data();
+  } else {
+    data = transaction.data;
+  }
+
+  let data2: string | undefined;
+  if (typeof transaction2.data === "function") {
+    data2 = await transaction2.data();
+  } else {
+    data2 = transaction2.data;
+  }
+
+  console.log("data: ", data);
+  console.log("data2: ", data2);
+
+  const mTx = multicall({
+    contract,
+    data: [data as `0x${string}`, data2 as `0x${string}`],
+  });
+
+  //console.log("mTx:", mTx);
+
+  const result = await sendTransaction({
+    account,
+    transaction: mTx,
+  });
+  
   console.log("Transaction hash:", result.transactionHash);
+
+  
 
   // const encodedTx = await encode(transaction);
 
