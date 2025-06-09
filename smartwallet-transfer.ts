@@ -1,7 +1,7 @@
 import { createThirdwebClient, getContract, sendAndConfirmTransaction } from "thirdweb";
 import { privateKeyToAccount, smartWallet } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
-import { claimTo, getActiveClaimCondition } from "thirdweb/extensions/erc721";
+import { getActiveClaimCondition } from "thirdweb/extensions/erc721";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -13,7 +13,7 @@ async function main() {
   });
 
   // Define the custom chain
-  const customChain = defineChain(84532);
+  const customChain = defineChain(11155111);
 
   // 1. Initialize an account for an EOA wallet from the private key
   const eoaAccount = privateKeyToAccount({
