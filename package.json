@@ -8,6 +8,6 @@
     "ethers-utils": "^2.1.11",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
-    "thirdweb": "5.102.6"
+    "thirdweb": "5.104.0"
   }
 }
