@@ -1,3 +1,4 @@
+import { prepareEvent, getContractEvents } from "thirdweb";
 import { getAllValidListings, totalListings } from "thirdweb/extensions/marketplace";
 import { createThirdwebClient, getContract } from "thirdweb";
 import { defineChain } from 'thirdweb/chains';
@@ -24,19 +25,22 @@ const client = createThirdwebClient({
   console.log(`Total listings:`, total);
 
   const startTime = Date.now();
-  for (let start = BigInt(0); start < total; start += BigInt(500)) {
-    const remaining = total - start;
-    const count = remaining >= 500 ? 500 : remaining;
-    const listings = await getAllValidListings({
-      contract,
-      start: Number(start),
-      count: BigInt(count),
-    });
-    console.log(`Listings ${start} to ${start + BigInt(count)}:`, listings.length);
-  }
+  
+
+const preparedEvent = prepareEvent({
+  signature:
+    "event NewListing(address indexed listingCreator, uint256 indexed listingId, address indexed assetContract, (uint256 listingId, uint256 tokenId, uint256 quantity, uint256 pricePerToken, uint128 startTimestamp, uint128 endTimestamp, address listingCreator, address assetContract, address currency, uint8 tokenType, uint8 status, bool reserved) listing)",
+});
+const events = await getContractEvents({
+  contract,
+  events: [preparedEvent],
+});
+
+  console.log(`Events:`, events.length);
+
   const endTime = Date.now();
   const totalTimeSeconds = (endTime - startTime) / 1000;
-  console.log(`Total time to get all listings: ${totalTimeSeconds} seconds`);
+  console.log(`Total time to get all events: ${totalTimeSeconds} seconds`);
 }
 
 main().catch(console.error);
