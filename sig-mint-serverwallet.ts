@@ -20,15 +20,15 @@ async function main() {
   // Define the chain using environment variable
   const chain = defineChain(84532);
 
-  // get server wallet using the signer address instead of smart wallet address
+  // get server wallet with execution option set to eoa
   const swAccount = Engine.serverWallet({
     client,
     chain,
-    address: "0x3A75736b1C9A5A8679D90F7edd0B3630c8587FA9",
+    address: process.env.SMART_SERVER_WALLET_ADDRESS! as string,
     vaultAccessToken: process.env.VAULT_ACCESS_TOKEN! as string,
     executionOptions: {
       type: "eoa",
-      address: "0x3A75736b1C9A5A8679D90F7edd0B3630c8587FA9",
+      address: process.env.EOA_SIGNER_SERVER_WALLET_ADDRESS! as string,
     },
   });
 
