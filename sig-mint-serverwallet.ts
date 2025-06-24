@@ -65,7 +65,7 @@ async function main() {
   
   // Initialize an account from the private key
   // PRIVATE KEY2 HAS MINTER ROLE ON CONTRACT
-  const account = privateKeyToAccount({
+  const clientSideAccount = privateKeyToAccount({
     client,
     privateKey: process.env.EOA_PRIVATE_KEY!,
   });
@@ -79,7 +79,7 @@ async function main() {
   });
 
   const result = await sendTransaction({
-    account,
+    account: clientSideAccount,
     transaction: transaction,
   });
   
