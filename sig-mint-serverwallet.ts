@@ -21,14 +21,18 @@ async function main() {
   const chain = defineChain(84532);
 
   // get server wallet using the signer address instead of smart wallet address
-  const account2 = Engine.serverWallet({
+  const swAccount = Engine.serverWallet({
     client,
     chain,
     address: "0x3A75736b1C9A5A8679D90F7edd0B3630c8587FA9",
     vaultAccessToken: process.env.VAULT_ACCESS_TOKEN! as string,
+    executionOptions: {
+      type: "eoa",
+      address: "0x3A75736b1C9A5A8679D90F7edd0B3630c8587FA9",
+    },
   });
 
-  console.log("server wallet address signing:", account2.address);
+  console.log("server wallet address signing:", swAccount.address);
 
   // Get the contract
   const contract = getContract({
@@ -49,7 +53,7 @@ async function main() {
         //image: "https://example.com/image.png",
       },
     },
-    account: account2,
+    account: swAccount,
   });
 
   console.log("Generated signature:", signature);
