@@ -1,8 +1,9 @@
 import { createThirdwebClient, getContract, sendTransaction, Engine } from "thirdweb";
-import { privateKeyToAccount } from "thirdweb/wallets";
+import { privateKeyToAccount, smartWallet } from "thirdweb/wallets";
 import { defineChain } from "thirdweb/chains";
 import { generateMintSignature, mintWithSignature } from "thirdweb/extensions/erc721";
 import dotenv from "dotenv";
+import { ENTRYPOINT_ADDRESS_v0_6, DEFAULT_ACCOUNT_FACTORY_V0_6 } from "thirdweb/wallets/smart";
 
 dotenv.config();
 
@@ -12,9 +13,9 @@ async function main() {
     secretKey: process.env.THIRDWEB_SECRET_KEY as string,
   });
 
-  //////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // SERVER SIDE CODE STARTS HERE
-  //////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
   // Define the chain using environment variable
@@ -42,7 +43,7 @@ async function main() {
   });
 
   // Generate signature
-  const recipientAddress = "0xeAa5a7D7fA42CBAff443FE1BDB764E608E039F97";
+  const recipientAddress = "0xc3f2b2a12eba0f5989cd75b2964e31d56603a2ce";
   const {payload, signature} = await generateMintSignature({
     contract,
     mintRequest: {
@@ -59,18 +60,36 @@ async function main() {
   console.log("Generated signature:", signature);
   console.log("payload: ", payload);
 
-  //////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // CLIENT SIDE CODE STARTS HERE
-  //////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   
   // Initialize an account from the private key
-  // PRIVATE KEY2 HAS MINTER ROLE ON CONTRACT
   const clientSideAccount = privateKeyToAccount({
     client,
     privateKey: process.env.EOA_PRIVATE_KEY!,
   });
 
-  // Mint with signature
+  // connect smart wallet and give session key to EOA signer of the server wallet
+  const wallet = smartWallet({
+    chain: chain,
+    gasless: true,
+    sessionKey: {
+      address: process.env.EOA_SIGNER_SERVER_WALLET_ADDRESS! as string,
+      permissions: {
+        approvedTargets: "*",
+      }
+    }
+  });
+
+  const smartAccount = await wallet.connect({
+    client,
+    personalAccount: clientSideAccount,   
+  });
+  console.log("smart account address with session key:", smartAccount.address);
+
+
+  // prepare transaction to mint with signature
   console.log("minting NFT with signature");
   const transaction = mintWithSignature({
     contract,
@@ -78,8 +97,25 @@ async function main() {
     signature,
   });
 
+  // get server wallet with execution option set to erc4337 and pass in user smart account address so tx is sent from user smart account
+  // but signed by the EOA signer of the server wallet that was given session key above
+  const swAccount2 = Engine.serverWallet({
+    client,
+    chain,
+    address: process.env.SMART_SERVER_WALLET_ADDRESS! as string,
+    vaultAccessToken: process.env.VAULT_ACCESS_TOKEN! as string,
+    executionOptions: {
+      type: "ERC4337",
+      entrypointAddress: ENTRYPOINT_ADDRESS_v0_6,
+      factoryAddress: DEFAULT_ACCOUNT_FACTORY_V0_6,
+      signerAddress: process.env.EOA_SIGNER_SERVER_WALLET_ADDRESS! as string,
+      smartAccountAddress: smartAccount.address
+    },
+  });
+
+  // send tx to server wallet to execute
   const result = await sendTransaction({
-    account: clientSideAccount,
+    account: swAccount2,
     transaction: transaction,
   });
   
