@@ -4,13 +4,22 @@ import { defineChain } from "thirdweb/chains";
 import { generateMintSignature, mintWithSignature } from "thirdweb/extensions/erc721";
 import dotenv from "dotenv";
 import { ENTRYPOINT_ADDRESS_v0_6, DEFAULT_ACCOUNT_FACTORY_V0_6 } from "thirdweb/wallets/smart";
+import { setThirdwebDomains } from "thirdweb/utils";
 
 dotenv.config();
 
 async function main() {
+
+  setThirdwebDomains({
+    bundler: "bundler.thirdweb-dev.com",
+    engineCloud: "engine.thirdweb-dev.com",
+    rpc: "rpc.thirdweb-dev.com",
+    storage: "storage.thirdweb-dev.com",
+  });
+
   // Initialize the thirdweb client
   const client = createThirdwebClient({
-    secretKey: process.env.THIRDWEB_SECRET_KEY as string,
+    secretKey: process.env.THIRDWEB_SECRET_KEY_DEV as string,
   });
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,11 +34,11 @@ async function main() {
   const swAccount = Engine.serverWallet({
     client,
     chain,
-    address: process.env.SMART_SERVER_WALLET_ADDRESS! as string,
-    vaultAccessToken: process.env.VAULT_ACCESS_TOKEN! as string,
+    address: process.env.SMART_SERVER_WALLET_ADDRESS_DEV! as string,
+    vaultAccessToken: process.env.VAULT_ACCESS_TOKEN_DEV! as string,
     executionOptions: {
-      type: "eoa",
-      address: process.env.EOA_SIGNER_SERVER_WALLET_ADDRESS! as string,
+      type: "ERC4337",
+      address: process.env.SMART_SERVER_WALLET_ADDRESS! as string,
     },
   });
 
@@ -43,7 +52,7 @@ async function main() {
   });
 
   // Generate signature
-  const recipientAddress = "0xc3f2b2a12eba0f5989cd75b2964e31d56603a2ce";
+  const recipientAddress = "0x09EC71a68D4Ff05F5b8F1BB53F27e6a11d819a04";
   const {payload, signature} = await generateMintSignature({
     contract,
     mintRequest: {

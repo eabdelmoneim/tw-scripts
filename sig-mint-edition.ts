@@ -39,7 +39,7 @@ async function main() {
     mintRequest: {
       to: recipientAddress,
       quantity: 1n,
-      //tokenId: 0n,
+      tokenId: 3n,
       metadata: {
         name: "My ERC1155 #2",
         description: "This is my ERC1155 #2",
@@ -50,6 +50,7 @@ async function main() {
   });
 
   console.log("Generated signature:", signature);
+  console.log("payload:", payload);
 
   // Mint with signature
   console.log("minting NFT with signature");
