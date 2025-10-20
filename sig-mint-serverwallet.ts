@@ -38,7 +38,8 @@ async function main() {
     vaultAccessToken: process.env.VAULT_ACCESS_TOKEN_DEV! as string,
     executionOptions: {
       type: "ERC4337",
-      address: process.env.SMART_SERVER_WALLET_ADDRESS! as string,
+      signerAddress: process.env.EOA_SIGNER_SERVER_WALLET_ADDRESS! as string,
+      smartAccountAddress: process.env.SMART_SERVER_WALLET_ADDRESS_DEV! as string
     },
   });
 
