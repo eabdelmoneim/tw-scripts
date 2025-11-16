@@ -13,7 +13,7 @@ async function main() {
   });
 
   // Define the custom chain
-  const customChain = defineChain(84532);
+  const customChain = defineChain(8453);
 
   // 1. Initialize an account for an EOA wallet from the private key
   const eoaAccount = privateKeyToAccount({
@@ -35,7 +35,7 @@ async function main() {
   // 3. Get the ERC721 NFT contract
   const contract = getContract({
     client,
-    address: "0xcdD8333677a6B6b22bB8e817AB59883fcEbaAF74",
+    address: "0x1Ef8Cb81000EfAE29400925d7898585Fad61BF06",
     chain: customChain,
   });
 
@@ -50,29 +50,31 @@ async function main() {
 
   for (let i = 0; i < totalIterations; i++) {
     // 4. Prepare the claimTo transaction
-    // const transaction = claimTo({
-    //   contract,
-    //   to: eoaAccount.address,
-    //   quantity: 1n,
-    // });
+    const transaction = claimTo({
+      contract,
+      to: eoaAccount.address,
+      quantity: 1n,
+    });
 
-    // // 5. Send the transaction and log the transaction hash and time
-    // try {
-    //   const startTime = Date.now();
-    //   const result = await sendAndConfirmTransaction({
-    //     transaction,
-    //     account: smartAccount,
-    //   });
-    //   const endTime = Date.now();
-    //   const timeTaken = (endTime - startTime) / 1000; // Convert to seconds
-    //   totalTime += timeTaken;
-    //   console.log(`Iteration ${i + 1}:`);
-    //   console.log("Transaction hash:", result.transactionHash);
-    //   console.log("Time taken:", timeTaken, "seconds");
-    //   console.log("------------------------");
-    // } catch (error) {
-    //   console.error(`Error sending transaction in iteration ${i + 1}:`, error);
-    // }
+    //console.log("transaction: ", transactio);
+
+    // 5. Send the transaction and log the transaction hash and time
+    try {
+      const startTime = Date.now();
+      const result = await sendAndConfirmTransaction({
+        transaction,
+        account: smartAccount,
+      });
+      const endTime = Date.now();
+      const timeTaken = (endTime - startTime) / 1000; // Convert to seconds
+      totalTime += timeTaken;
+      console.log(`Iteration ${i + 1}:`);
+      console.log("Transaction hash:", result.transactionHash);
+      console.log("Time taken:", timeTaken, "seconds");
+      console.log("------------------------");
+    } catch (error) {
+      console.error(`Error sending transaction in iteration ${i + 1}:`, error);
+    }
   }
 
   // Calculate and log the average time
